@@ -1,0 +1,144 @@
+# Canonical manifest for legal documents to ingest into the RAG corpus.
+# `id` trong collections là mã ổn định dùng để lọc phạm vi tìm kiếm RAG.
+# `id` trong laws là mã duy nhất cho từng văn bản pháp luật, không phải mã collection.
+# Một văn bản có thể thuộc nhiều collection; hãy luôn gán `vn-law` và thêm các
+# collection chuyên đề phù hợp.
+#
+# Cách khai báo khi bổ sung một collection/chủ đề mới:
+#   1. Thêm collection gồm id, name và description vào mục `collections`.
+#   2. Thêm id đó vào `collections` của từng văn bản liên quan bên dưới.
+#   3. Không tạo bản sao law/chunk chỉ để đưa văn bản vào collection khác.
+#
+# Cách khai báo khi bổ sung một văn bản mới vào collection hiện có:
+#   1. Tải bản toàn văn từ nguồn chính thức; đặt file trong scripts/data/source/.
+#   2. Thêm law với id duy nhất, metadata chính xác và officialUrl.
+#   3. Gán collection gồm `vn-law` và các collection chuyên đề phù hợp.
+#   4. Điền sources.path tương đối từ thư mục gốc repo. Nhiều phần PDF cần
+#      khai báo thành nhiều mục sources theo thứ tự part 1, 2, 3...
+#
+# Ingest tất cả văn bản có source bằng một lệnh: `pnpm rag:ingest`.
+# Cài Python packages lần đầu: `python3 -m pip install -r scripts/requirements.txt`.
+# JSON parse được giữ local trong scripts/data/ (đã được Git ignore).
+# `pnpm rag:ingest` chỉ upsert văn bản có nguồn cấu hình và không xóa dữ liệu khác.
+#
+# Paths under sources are relative to the repository root.
+
+configVersion: 1
+
+defaults:
+  jurisdiction: VN
+  language: vi
+  parserProfile: vietnamese-legal-v1
+
+collections:
+  # Collection tổng hợp: mọi văn bản đã nạp đều nên được gán vào đây.
+  - id: vn-law # Pháp luật Việt Nam, phạm vi tra cứu toàn bộ
+    name: Pháp luật Việt Nam
+    description: Tập hợp tất cả văn bản pháp luật Việt Nam được nạp vào RAG.
+
+  # Nhóm theo lĩnh vực; đây không phải loại văn bản pháp luật.
+  - id: civil-contract-law # Dân sự, nghĩa vụ và hợp đồng
+    name: Dân sự và hợp đồng
+    description: Quy định dân sự, nghĩa vụ và giao dịch hợp đồng.
+
+  - id: labor-law # Quan hệ lao động, tiền lương và quyền lợi người lao động
+    name: Pháp luật lao động
+    description: Quan hệ lao động, hợp đồng lao động và quyền lợi người lao động.
+
+  - id: commercial-law # Hoạt động thương mại và hợp đồng kinh doanh
+    name: Pháp luật thương mại
+    description: Hoạt động thương mại và hợp đồng trong kinh doanh.
+
+  - id: land-law # Quyền sử dụng đất và các giao dịch đất đai
+    name: Pháp luật đất đai
+    description: Quyền, nghĩa vụ và giao dịch liên quan đến đất đai.
+
+  - id: business-law # Thành lập, quản trị và hoạt động doanh nghiệp
+    name: Pháp luật doanh nghiệp
+    description: Thành lập, tổ chức và hoạt động của doanh nghiệp.
+
+laws:
+  # id văn bản: blds-2015. Thuộc bộ tổng hợp và nhóm dân sự/hợp đồng.
+  - id: blds-2015
+    title: Bộ luật Dân sự 2015
+    code: "91/2015/QH13"
+    type: BO_LUAT
+    authority: QUOC_HOI
+    issuedDate: "2015-11-24"
+    effectiveDate: "2017-01-01"
+    status: ACTIVE
+    collections:
+      - vn-law
+      - civil-contract-law
+    officialUrl: "https://vbpl.vn/van-ban/chi-tiet/bo-luat-dan-su-so-91-2015-qh13--95942"
+    sources:
+      # Thay path rỗng bằng đường dẫn tương đối tới file đã tải.
+      - path: "scripts/data/sources/blds_2015.docx"
+
+  # ID chuẩn trong PostgreSQL: blld-2019. Thuộc bộ tổng hợp và nhóm lao động.
+  - id: blld-2019
+    title: Bộ luật Lao động 2019
+    code: "45/2019/QH14"
+    type: BO_LUAT
+    authority: QUOC_HOI
+    issuedDate: "2019-11-20"
+    effectiveDate: "2021-01-01"
+    status: ACTIVE
+    collections:
+      - vn-law
+      - labor-law
+    officialUrl: "https://vbpl.vn/van-ban/chi-tiet/bo-luat-lao-dong-so-45-2019-qh14--139264"
+    sources:
+      - path: "scripts/data/sources/blld_2019.docx"
+
+  # ID chuẩn trong PostgreSQL: ltm-2005. Gán cả nhóm thương mại và hợp đồng.
+  - id: ltm-2005
+    title: Luật Thương mại 2005
+    code: "36/2005/QH11"
+    type: LUAT
+    authority: QUOC_HOI
+    issuedDate: "2005-06-14"
+    effectiveDate: "2006-01-01"
+    status: ACTIVE
+    collections:
+      - vn-law
+      - commercial-law
+      - civil-contract-law
+    officialUrl: "https://vbpl.vn/van-ban/chi-tiet/luat-thuong-mai-so-36-2005-qh11--8054"
+    sources:
+      - path: ""
+        part: 1
+
+  # ID chuẩn trong PostgreSQL: ldd-2024. Thuộc bộ tổng hợp và nhóm đất đai.
+  - id: ldd-2024
+    title: Luật Đất đai 2024
+    code: "31/2024/QH15"
+    type: LUAT
+    authority: QUOC_HOI
+    issuedDate: "2024-01-18"
+    effectiveDate: "2024-08-01"
+    status: ACTIVE
+    collections:
+      - vn-law
+      - land-law
+    officialUrl: "https://vbpl.vn/van-ban/chi-tiet/luat-dat-dai-so-31-2024-qh15--163764"
+    sources:
+      - path: ""
+        part: 1
+
+  # ID chuẩn trong PostgreSQL: ldn-2020. Thuộc bộ tổng hợp và nhóm doanh nghiệp.
+  - id: ldn-2020
+    title: Luật Doanh nghiệp 2020
+    code: "59/2020/QH14"
+    type: LUAT
+    authority: QUOC_HOI
+    issuedDate: "2020-06-17"
+    effectiveDate: "2021-01-01"
+    status: ACTIVE
+    collections:
+      - vn-law
+      - business-law
+    officialUrl: "https://vbpl.vn/van-ban/chi-tiet/luat-doanh-nghiep-so-59-2020-qh14--147567"
+    sources:
+      - path: ""
+        part: 1

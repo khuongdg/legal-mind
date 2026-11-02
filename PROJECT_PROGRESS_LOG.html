@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal-Mind | Bảng Theo Dõi Tiến Độ & Bản Đồ Kiến Trúc</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            legal: {
+              50: '#f0f5fa',
+              100: '#e1ecf4',
+              200: '#c7dbe9',
+              300: '#9fc3d9',
+              400: '#6fa6c5',
+              500: '#498ab0',
+              600: '#366e92',
+              700: '#2d5877',
+              800: '#1e3c54',
+              900: '#0f2030',
+              950: '#08131e',
+            },
+            gold: {
+              400: '#f6cf70',
+              500: '#eab308',
+              600: '#ca8a04',
+              700: '#a16207',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            serif: ['Merriweather', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #08131e; }
+    ::-webkit-scrollbar-thumb { background: #1e3c54; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ca8a04; }
+    .glass-card {
+      background: rgba(15, 32, 48, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .timeline-line::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 19px;
+      width: 2px;
+      background: linear-gradient(180deg, #ca8a04 0%, #1e3c54 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-amber-500 selection:text-slate-950 antialiased">
+
+  <!-- Top Header Navigation -->
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-800/80 bg-slate-950/90 shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+      <div class="flex items-center gap-3">
+        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 text-slate-950 shadow-lg shadow-amber-500/20 font-black">
+          <i data-lucide="scale" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-white">
+              LEGAL<span class="text-amber-400 font-serif italic">MIND</span>
+            </span>
+            <span class="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-bold text-amber-400 border border-amber-500/20">
+              AUDIT TRAIL & ARCHITECTURE
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Bảng theo dõi tiến độ & bản đồ kiến trúc toàn dự án</p>
+        </div>
+      </div>
+
+      <!-- Quick Nav Links -->
+      <nav class="hidden md:flex items-center gap-2 text-xs font-semibold">
+        <a href="#stats" class="px-3 py-2 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 transition-all">📊 Thống kê</a>
+        <a href="#file-map" class="px-3 py-2 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 transition-all">🗺️ Bản đồ File</a>
+        <a href="#timeline" class="px-3 py-2 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 transition-all">⏱️ Dòng thời gian</a>
+        <a href="#scaffolding-vs-prod" class="px-3 py-2 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 transition-all">🏗️ Đối chiếu Scaffolding</a>
+        <a href="#guidelines" class="px-3 py-2 rounded-xl text-slate-300 hover:text-amber-400 hover:bg-slate-900 transition-all">📘 Quy chuẩn</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400 border border-emerald-500/20">
+          <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Đang chạy: Web (3000) & API (3001)
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+    <!-- Section 1: Dashboard Stats Overview -->
+    <section id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="glass-card rounded-2xl p-5 hover:border-amber-500/40 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium">
+          <span>Gói Monorepo</span>
+          <i data-lucide="boxes" class="w-4 h-4 text-amber-400"></i>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span class="text-3xl font-extrabold text-white">5</span>
+          <span class="text-xs text-slate-400">gói (2 Apps, 3 Packages)</span>
+        </div>
+        <div class="mt-2 text-[11px] text-amber-400/90 font-mono">pnpm + Turborepo 2.x</div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 hover:border-amber-500/40 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium">
+          <span>Tổng số file mã nguồn</span>
+          <i data-lucide="file-code-2" class="w-4 h-4 text-emerald-400"></i>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span class="text-3xl font-extrabold text-white">32</span>
+          <span class="text-xs text-slate-400">files khởi tạo</span>
+        </div>
+        <div class="mt-2 text-[11px] text-emerald-400/90 font-mono">100% TypeScript</div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 hover:border-amber-500/40 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium">
+          <span>Tính năng Cốt lõi</span>
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span class="text-3xl font-extrabold text-white">3</span>
+          <span class="text-xs text-slate-400">tính năng hoàn chỉnh</span>
+        </div>
+        <div class="mt-2 text-[11px] text-slate-400">RAG • Rà soát HĐ • Soạn thảo</div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 hover:border-amber-500/40 transition-all">
+        <div class="flex items-center justify-between text-slate-400 text-xs font-medium">
+          <span>Mốc Thay Đổi (Milestones)</span>
+          <i data-lucide="git-commit" class="w-4 h-4 text-purple-400"></i>
+        </div>
+        <div class="mt-3 flex items-baseline gap-2">
+          <span class="text-3xl font-extrabold text-white">6</span>
+          <span class="text-xs text-slate-400">mốc đã ghi nhận</span>
+        </div>
+        <div class="mt-2 text-[11px] text-purple-400/90 font-mono">Cập nhật: 25/10/2026</div>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive File Map -->
+    <section id="file-map" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+            <i data-lucide="folder-tree" class="w-5 h-5 text-amber-400"></i>
+            Bản Đồ Cấu Trúc Toàn Bộ Dự Án & Chi Tiết Từng File
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Tra cứu vị trí, chức năng cụ thể và luồng xử lý của từng tập tin trong hệ thống.
+          </p>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <div class="flex items-center gap-3">
+          <div class="relative w-full sm:w-64">
+            <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input
+              type="text"
+              id="fileSearch"
+              placeholder="Tìm kiếm file, chức năng..."
+              class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/90 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-amber-500/60"
+              onkeyup="filterFiles()"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex flex-wrap gap-2 text-xs">
+        <button onclick="filterCategory('ALL')" class="category-btn active px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 font-medium">Tất cả (32 files)</button>
+        <button onclick="filterCategory('ROOT')" class="category-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white">Gốc & Cấu hình (9)</button>
+        <button onclick="filterCategory('API')" class="category-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white">apps/api (11)</button>
+        <button onclick="filterCategory('WEB')" class="category-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white">apps/web (8)</button>
+        <button onclick="filterCategory('SCHEMAS')" class="category-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white">packages/legal-schemas (5)</button>
+        <button onclick="filterCategory('DB')" class="category-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white">packages/db (4)</button>
+        <button onclick="filterCategory('ENV')" class="category-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white">packages/env (4)</button>
+      </div>
+
+      <!-- File Grid Cards -->
+      <div id="fileContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- 1. Root Config Files -->
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-amber-500" data-category="ROOT" data-keywords="package.json monorepo pnpm turborepo scripts">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-amber-400">package.json</span>
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-300 font-mono">Root Workspace</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Định nghĩa Monorepo `legal-mind`, quản lý toàn bộ dependencies, scripts (`dev`, `build`, `dev:api`, `dev:web`, `lint`, `typecheck`). Tích hợp Turborepo 2.x và pnpm 11.x.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Vai trò: Quản lý vòng đời dự án</span>
+            <button onclick="copyPath('package.json')" class="hover:text-amber-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-amber-500" data-category="ROOT" data-keywords="pnpm-workspace.yaml workspace packages apps allowbuilds esbuild">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-amber-400">pnpm-workspace.yaml</span>
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-300 font-mono">Root Workspace</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Khai báo cấu trúc thư mục workspace gồm `apps/*` và `packages/*`. Thiết lập cấu hình bảo mật `allowBuilds: { esbuild: true }` để vượt qua cơ chế chặn script của pnpm 11+.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Vai trò: Cấu hình Workspace pnpm</span>
+            <button onclick="copyPath('pnpm-workspace.yaml')" class="hover:text-amber-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-amber-500" data-category="ROOT" data-keywords="turbo.json pipeline caching globalenv">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-amber-400">turbo.json</span>
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-300 font-mono">Turborepo</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Quy định pipeline thực thi song song, kiểm soát cache đầu ra (`dist/**`) và định nghĩa danh sách biến môi trường toàn cục (`PORT`, `DATABASE_URL`, API Keys).
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Vai trò: Tối ưu hóa Build & Pipeline</span>
+            <button onclick="copyPath('turbo.json')" class="hover:text-amber-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-amber-500" data-category="ROOT" data-keywords="legal_mind_ai_roadmap.md blueprint kien truc ke hoach paw-hub">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-amber-400">LEGAL_MIND_AI_ROADMAP.md</span>
+            <span class="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-300 font-mono">Tài liệu Thiết kế</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Bản đặc tả kiến trúc kỹ thuật toàn diện (Blueprint): Đối chiếu bài học AI từ Paw-Hub, thiết kế chi tiết 3 tính năng cốt lõi, schema database và lộ trình 4 giai đoạn.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Vai trò: Kim chỉ nam kiến trúc dự án</span>
+            <button onclick="copyPath('LEGAL_MIND_AI_ROADMAP.md')" class="hover:text-amber-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <!-- 2. Apps: API -->
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-blue-500" data-category="API" data-keywords="apps/api/src/index.ts elysia swagger cors health bun">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-blue-400">apps/api/src/index.ts</span>
+            <span class="rounded bg-blue-950/60 px-2 py-0.5 text-[10px] text-blue-300 font-mono">Elysia Server</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Điểm khởi chạy máy chủ backend ElysiaJS: Tích hợp Swagger OpenAPI tại `/swagger`, middleware CORS, endpoint kiểm tra sức khỏe `/health`, và gắn 4 module API con.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Port: 3001 | Swagger: /swagger</span>
+            <button onclick="copyPath('apps/api/src/index.ts')" class="hover:text-blue-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-blue-500" data-category="API" data-keywords="apps/api/src/modules/rag/service.ts hybrid search catalog pgvector blds">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-blue-400">apps/api/src/modules/rag/service.ts</span>
+            <span class="rounded bg-blue-950/60 px-2 py-0.5 text-[10px] text-blue-300 font-mono">RAG Engine</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Dịch vụ tìm kiếm luật lai (Hybrid Search): Truy vấn Postgres Full-text `tsvector` khi DB sẵn sàng, tự động chuyển đổi sang tìm kiếm đối chiếu thông minh với kho dữ liệu chuẩn.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tính năng 1: Tra cứu Dẫn nguồn chính xác</span>
+            <button onclick="copyPath('apps/api/src/modules/rag/service.ts')" class="hover:text-blue-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-blue-500" data-category="API" data-keywords="apps/api/src/modules/contract/service.ts contract review redline phat 8% lai suat 20%">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-blue-400">apps/api/src/modules/contract/service.ts</span>
+            <span class="rounded bg-blue-950/60 px-2 py-0.5 text-[10px] text-blue-300 font-mono">Contract Engine</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Engine rà soát hợp đồng: Tự động phát hiện bẫy phạt vi phạm quá 8% (Luật Thương mại Đ301), lãi suất quá 20%/năm (BLDS Đ468), đơn phương chấm dứt không báo trước, và tạo Redline sửa đổi.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tính năng 2: Rà soát Hợp đồng & Track Changes</span>
+            <button onclick="copyPath('apps/api/src/modules/contract/service.ts')" class="hover:text-blue-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-blue-500" data-category="API" data-keywords="apps/api/src/modules/drafting/service.ts nghi dinh 30 don khoi kien thue nha">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-blue-400">apps/api/src/modules/drafting/service.ts</span>
+            <span class="rounded bg-blue-950/60 px-2 py-0.5 text-[10px] text-blue-300 font-mono">Drafting Service</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Dịch vụ sinh văn bản hành chính theo quy chuẩn Nghị định 30/2020/NĐ-CP (Quốc hiệu, Tiêu ngữ, Căn cứ pháp lý, Yêu cầu giải quyết, Danh mục chứng cứ kèm theo, Hướng dẫn nộp án phí).
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tính năng 3: Soạn thảo Đơn từ & Văn bản</span>
+            <button onclick="copyPath('apps/api/src/modules/drafting/service.ts')" class="hover:text-blue-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-blue-500" data-category="API" data-keywords="apps/api/src/modules/chat/service.ts chain of thought reasoning assistant">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-blue-400">apps/api/src/modules/chat/service.ts</span>
+            <span class="rounded bg-blue-950/60 px-2 py-0.5 text-[10px] text-blue-300 font-mono">Chat Service</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Dịch vụ Trợ lý AI pháp luật: Kết hợp RAG tìm điều luật, phân tích lập luận Chain-of-Thought 4 bước, sinh lời khuyên pháp lý và gắn kèm huy hiệu dẫn nguồn cho frontend.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tích hợp: Reasoning Chain + Citations Metadata</span>
+            <button onclick="copyPath('apps/api/src/modules/chat/service.ts')" class="hover:text-blue-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <!-- 3. Apps: Web -->
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-emerald-500" data-category="WEB" data-keywords="apps/web/src/app.tsx navbar tabs legalchat contractreview legaldrafting">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-emerald-400">apps/web/src/App.tsx</span>
+            <span class="rounded bg-emerald-950/60 px-2 py-0.5 text-[10px] text-emerald-300 font-mono">React 19 App</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Khung giao diện chính: Header logo cán cân công lý, thanh chuyển tab mượt mà cho 3 tính năng cốt lõi, đèn báo trạng thái hệ thống, và chân trang tuyên bố miễn trừ trách nhiệm.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Port: 3000 | 3 Tabs chức năng</span>
+            <button onclick="copyPath('apps/web/src/App.tsx')" class="hover:text-emerald-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-emerald-500" data-category="WEB" data-keywords="apps/web/src/components/legalchatview.tsx chat suggestions reasoning citations badges">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-emerald-400">apps/web/src/components/LegalChatView.tsx</span>
+            <span class="rounded bg-emerald-950/60 px-2 py-0.5 text-[10px] text-emerald-300 font-mono">UI Chat</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Màn hình Trợ lý AI Hỏi - Đáp: Gợi ý câu hỏi tình huống thực tế, khối suy luận Chain-of-Thought gập/mở, và các huy hiệu trích dẫn tương tác mở xem chi tiết điều luật.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tính năng: Streaming UI + Interactive Badges</span>
+            <button onclick="copyPath('apps/web/src/components/LegalChatView.tsx')" class="hover:text-emerald-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-emerald-500" data-category="WEB" data-keywords="apps/web/src/components/contractreviewview.tsx diff track changes redline risk score">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-emerald-400">apps/web/src/components/ContractReviewView.tsx</span>
+            <span class="rounded bg-emerald-950/60 px-2 py-0.5 text-[10px] text-emerald-300 font-mono">UI Review</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Màn hình Rà soát Hợp đồng: Nút nạp nhanh mẫu HĐ thương mại/vay tiền, đồng hồ đo điểm rủi ro (0-100), phân loại cảnh báo Critical/High/Safe, và khối so sánh Redline Track Changes.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tính năng: Visual Redlining Diff View</span>
+            <button onclick="copyPath('apps/web/src/components/ContractReviewView.tsx')" class="hover:text-emerald-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-emerald-500" data-category="WEB" data-keywords="apps/web/src/components/legaldraftingview.tsx form wizard nghi dinh 30 preview copy">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-emerald-400">apps/web/src/components/LegalDraftingView.tsx</span>
+            <span class="rounded bg-emerald-950/60 px-2 py-0.5 text-[10px] text-emerald-300 font-mono">UI Wizard</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Màn hình Soạn thảo Đơn từ: Chọn mẫu đơn, form điền dữ kiện động, sinh văn bản hành chính trang trọng trên giấy ảo, sao chép một chạm và hướng dẫn nộp hồ sơ.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tính năng: Interactive Step Wizard & Preview</span>
+            <button onclick="copyPath('apps/web/src/components/LegalDraftingView.tsx')" class="hover:text-emerald-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-emerald-500" data-category="WEB" data-keywords="apps/web/src/components/citationdrawer.tsx modal nguyen van dieu luat active cong thong tin">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-emerald-400">apps/web/src/components/CitationDrawer.tsx</span>
+            <span class="rounded bg-emerald-950/60 px-2 py-0.5 text-[10px] text-emerald-300 font-mono">UI Modal</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Modal hiển thị chi tiết điều luật: Trích lục nguyên văn từ DB, số ký hiệu văn bản, huy hiệu trạng thái "Còn hiệu lực (ACTIVE)", và đường dẫn trực tiếp kiểm tra trên Cổng TTĐT Chính phủ.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Tính năng: Law Verification Popover</span>
+            <button onclick="copyPath('apps/web/src/components/CitationDrawer.tsx')" class="hover:text-emerald-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <!-- 4. Packages: Schemas, DB, Env -->
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-purple-500" data-category="SCHEMAS" data-keywords="packages/legal-schemas/src/citation.ts zod citation legaldocumenttype active expired">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-purple-400">packages/legal-schemas/src/citation.ts</span>
+            <span class="rounded bg-purple-950/60 px-2 py-0.5 text-[10px] text-purple-300 font-mono">Zod Schemas</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Định nghĩa các kiểu dữ liệu trích dẫn chuẩn: `LegalDocumentTypeEnum`, `LegalEffectStatusEnum`, `CitationSchema` và `LegalSearchQuerySchema`.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Đảm bảo Type-safety cho RAG Citations</span>
+            <button onclick="copyPath('packages/legal-schemas/src/citation.ts')" class="hover:text-purple-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-purple-500" data-category="SCHEMAS" data-keywords="packages/legal-schemas/src/contract.ts contractreview risklevel redlinesuggestion">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-purple-400">packages/legal-schemas/src/contract.ts</span>
+            <span class="rounded bg-purple-950/60 px-2 py-0.5 text-[10px] text-purple-300 font-mono">Zod Schemas</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Định nghĩa cấu trúc phân tích hợp đồng: `ContractTypeEnum`, `RiskLevelEnum` (CRITICAL, HIGH, MEDIUM, SAFE), `RedlineSuggestionSchema`, và `ContractReviewSchema`.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Hợp đồng dữ liệu cho Contract Audit</span>
+            <button onclick="copyPath('packages/legal-schemas/src/contract.ts')" class="hover:text-purple-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-cyan-500" data-category="DB" data-keywords="packages/db/src/schema.sql postgres pgvector unaccent legal_documents legal_chunks">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-cyan-400">packages/db/src/schema.sql</span>
+            <span class="rounded bg-cyan-950/60 px-2 py-0.5 text-[10px] text-cyan-300 font-mono">PostgreSQL DDL</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Script khởi tạo cơ sở dữ liệu: Kích hoạt extension `vector`, `unaccent`, `uuid-ossp`; tạo các bảng `legal_documents`, `legal_chunks` (kèm vector embedding và search_vector tsvector), `contracts`, `contract_reviews`.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Cơ sở dữ liệu Vector & Quan hệ</span>
+            <button onclick="copyPath('packages/db/src/schema.sql')" class="hover:text-cyan-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+        <div class="file-card glass-card rounded-2xl p-4.5 space-y-2 border-l-4 border-l-rose-500" data-category="ENV" data-keywords="packages/env/src/schema.ts validation serverenv clientenv zod">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold text-rose-400">packages/env/src/schema.ts</span>
+            <span class="rounded bg-rose-950/60 px-2 py-0.5 text-[10px] text-rose-300 font-mono">Env Validator</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Kiểm thực biến môi trường bằng Zod: Kiểm tra tính hợp lệ của `PORT`, `DATABASE_URL`, API Keys OpenRouter/OpenAI/Gemini/Anthropic trước khi ứng dụng khởi động.
+          </p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-400">
+            <span>Bảo vệ chống lỗi cấu hình runtime</span>
+            <button onclick="copyPath('packages/env/src/schema.ts')" class="hover:text-rose-400 flex items-center gap-1 font-mono">📋 Copy path</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 3: Chronological Audit Trail (Timeline) -->
+    <section id="timeline" class="space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <i data-lucide="history" class="w-5 h-5 text-amber-400"></i>
+          Dòng Thời Gian Thay Đổi (Chronological Audit Trail)
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">
+          Lịch sử chi tiết từng phiên can thiệp mã nguồn theo mốc thời gian chuẩn GMT+7.
+        </p>
+      </div>
+
+      <!-- Timeline Wrapper -->
+      <div class="relative timeline-line space-y-8 pl-10 pr-2">
+
+        <!-- Mốc 6 -->
+        <div class="relative glass-card rounded-2xl p-5 border-l-4 border-l-purple-500">
+          <div class="absolute -left-[30px] top-5 flex h-6 w-6 items-center justify-center rounded-full bg-purple-500 text-slate-950 font-bold text-xs ring-4 ring-slate-950">
+            6
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-purple-400 uppercase tracking-wider">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                DOCUMENTATION & AUDIT TRAIL
+              </span>
+              <h3 class="text-sm font-bold text-white mt-0.5">Khởi tạo File Nhật ký Truy vết & Bản đồ Kiến trúc (MD & HTML)</h3>
+            </div>
+            <span class="font-mono text-xs text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              2026-10-25 18:15:00 GMT+7
+            </span>
+          </div>
+          <div class="mt-3 space-y-2 text-xs text-slate-300 leading-relaxed">
+            <p><strong class="text-emerald-400">[ADDED]</strong> Tạo file <code class="text-amber-300 font-mono">PROJECT_PROGRESS_LOG.html</code> giao diện tương tác trực quan cao cấp, hỗ trợ tìm kiếm file, lọc danh mục và truy vết mốc thời gian.</p>
+            <p><strong class="text-emerald-400">[ADDED]</strong> Tạo file <code class="text-amber-300 font-mono">PROJECT_PROGRESS_LOG.md</code> lưu trữ toàn bộ bản đồ thư mục, chức năng từng file và lịch sử thay đổi.</p>
+            <p><strong class="text-amber-400">[MODIFIED]</strong> Cập nhật <code class="text-amber-300 font-mono">README.md</code> dẫn link tài liệu theo dõi tiến độ.</p>
+          </div>
+        </div>
+
+        <!-- Mốc 5 -->
+        <div class="relative glass-card rounded-2xl p-5 border-l-4 border-l-cyan-500">
+          <div class="absolute -left-[30px] top-5 flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-slate-950 font-bold text-xs ring-4 ring-slate-950">
+            5
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 uppercase tracking-wider">
+                <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+                BUILD CONFIG & VERIFICATION
+              </span>
+              <h3 class="text-sm font-bold text-white mt-0.5">Tinh chỉnh Dependencies & Kiểm thực Vận hành Thực tế</h3>
+            </div>
+            <span class="font-mono text-xs text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              2026-10-25 17:47:35 GMT+7
+            </span>
+          </div>
+          <div class="mt-3 space-y-2 text-xs text-slate-300 leading-relaxed">
+            <p><strong class="text-rose-400">[FIXED]</strong> Sửa lỗi <code class="text-amber-300 font-mono">apps/api/package.json</code>: Loại bỏ gói không tồn tại <code class="text-rose-300">@ai-sdk/openrouter</code>, chuẩn hóa sử dụng <code class="text-emerald-300">@ai-sdk/openai</code> với baseURL OpenRouter.</p>
+            <p><strong class="text-rose-400">[FIXED]</strong> Thêm <code class="text-amber-300 font-mono">allowBuilds: { esbuild: true }</code> vào <code class="text-amber-300 font-mono">pnpm-workspace.yaml</code> khắc phục lỗi chặn script cài đặt của pnpm v11+.</p>
+            <p><strong class="text-emerald-400">[VERIFIED]</strong> Build thành công ứng dụng web trong 1.30s (<code class="text-emerald-300">pnpm --filter=@legal-mind/web build</code>), khởi động backend API Elysia trả về kết quả tra cứu RAG chuẩn xác.</p>
+          </div>
+        </div>
+
+        <!-- Mốc 4 -->
+        <div class="relative glass-card rounded-2xl p-5 border-l-4 border-l-emerald-500">
+          <div class="absolute -left-[30px] top-5 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-slate-950 font-bold text-xs ring-4 ring-slate-950">
+            4
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                <i data-lucide="layout" class="w-3.5 h-3.5"></i>
+                FRONTEND WEB DEVELOPMENT
+              </span>
+              <h3 class="text-sm font-bold text-white mt-0.5">Xây dựng Giao diện Web (React 19 + Tailwind CSS)</h3>
+            </div>
+            <span class="font-mono text-xs text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              2026-10-25 17:45:15 GMT+7
+            </span>
+          </div>
+          <div class="mt-3 space-y-2 text-xs text-slate-300 leading-relaxed">
+            <p><strong class="text-emerald-400">[ADDED]</strong> Thiết kế bảng màu sang trọng (navy blue & gold), font chữ học thuật Merriweather kết hợp Plus Jakarta Sans.</p>
+            <p><strong class="text-emerald-400">[ADDED]</strong> Triển khai 3 màn hình cốt lõi: <code class="text-amber-300 font-mono">LegalChatView.tsx</code>, <code class="text-amber-300 font-mono">ContractReviewView.tsx</code>, <code class="text-amber-300 font-mono">LegalDraftingView.tsx</code> và modal <code class="text-amber-300 font-mono">CitationDrawer.tsx</code>.</p>
+          </div>
+        </div>
+
+        <!-- Mốc 3 -->
+        <div class="relative glass-card rounded-2xl p-5 border-l-4 border-l-blue-500">
+          <div class="absolute -left-[30px] top-5 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-slate-950 font-bold text-xs ring-4 ring-slate-950">
+            3
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-400 uppercase tracking-wider">
+                <i data-lucide="server" class="w-3.5 h-3.5"></i>
+                BACKEND API IMPLEMENTATION
+              </span>
+              <h3 class="text-sm font-bold text-white mt-0.5">Xây dựng Backend API (ElysiaJS + Bun Runtime)</h3>
+            </div>
+            <span class="font-mono text-xs text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              2026-10-25 17:42:00 GMT+7
+            </span>
+          </div>
+          <div class="mt-3 space-y-2 text-xs text-slate-300 leading-relaxed">
+            <p><strong class="text-emerald-400">[ADDED]</strong> Thiết lập Swagger docs tại <code class="text-amber-300 font-mono">/swagger</code>, kích hoạt CORS cho frontend.</p>
+            <p><strong class="text-emerald-400">[ADDED]</strong> Tạo 4 module API: Tra cứu RAG luật (<code class="text-amber-300 font-mono">/api/rag</code>), Rà soát hợp đồng (<code class="text-amber-300 font-mono">/api/contract</code>), Soạn thảo đơn từ (<code class="text-amber-300 font-mono">/api/drafting</code>), và Trợ lý AI (<code class="text-amber-300 font-mono">/api/chat</code>).</p>
+          </div>
+        </div>
+
+        <!-- Mốc 2 -->
+        <div class="relative glass-card rounded-2xl p-5 border-l-4 border-l-amber-500">
+          <div class="absolute -left-[30px] top-5 flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-slate-950 font-bold text-xs ring-4 ring-slate-950">
+            2
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                MONOREPO INFRASTRUCTURE
+              </span>
+              <h3 class="text-sm font-bold text-white mt-0.5">Thiết lập Hạ tầng Monorepo & Các Gói Dùng Chung</h3>
+            </div>
+            <span class="font-mono text-xs text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              2026-10-25 17:40:00 GMT+7
+            </span>
+          </div>
+          <div class="mt-3 space-y-2 text-xs text-slate-300 leading-relaxed">
+            <p><strong class="text-emerald-400">[ADDED]</strong> Khởi tạo cấu hình Turborepo (<code class="text-amber-300 font-mono">turbo.json</code>) và workspace pnpm.</p>
+            <p><strong class="text-emerald-400">[ADDED]</strong> Tạo 3 packages: <code class="text-amber-300 font-mono">@legal-mind/legal-schemas</code>, <code class="text-amber-300 font-mono">@legal-mind/env</code>, và <code class="text-amber-300 font-mono">@legal-mind/db</code> với PostgreSQL + <code class="text-amber-300 font-mono">pgvector</code>.</p>
+          </div>
+        </div>
+
+        <!-- Mốc 1 -->
+        <div class="relative glass-card rounded-2xl p-5 border-l-4 border-l-slate-500">
+          <div class="absolute -left-[30px] top-5 flex h-6 w-6 items-center justify-center rounded-full bg-slate-500 text-slate-950 font-bold text-xs ring-4 ring-slate-950">
+            1
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <span class="inline-flex items-center gap-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <i data-lucide="compass" class="w-3.5 h-3.5"></i>
+                RESEARCH & BLUEPRINT
+              </span>
+              <h3 class="text-sm font-bold text-white mt-0.5">Nghiên cứu Chuyển giao AI từ Paw-Hub & Tạo Blueprint</h3>
+            </div>
+            <span class="font-mono text-xs text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              2026-10-25 17:15:42 GMT+7
+            </span>
+          </div>
+          <div class="mt-3 space-y-2 text-xs text-slate-300 leading-relaxed">
+            <p><strong class="text-emerald-400">[ADDED]</strong> Đọc hiểu mã nguồn Paw-Hub, đúc kết kinh nghiệm Vercel AI SDK, Vision parsing, Zod schemas và tạo file <code class="text-amber-300 font-mono">LEGAL_MIND_AI_ROADMAP.md</code>.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 4: Scaffolding vs Production Comparison Matrix -->
+    <section id="scaffolding-vs-prod" class="space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2.5">
+          <i data-lucide="cpu" class="w-5 h-5 text-amber-400"></i>
+          Đối Chiếu Kiến Trúc: Bộ Khung Cơ Bản (Scaffolding) vs Hệ Thống Thực Tế (Production)
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">
+          Bảng đối chiếu minh bạch làm rõ các phần đã hoàn thiện và các bước cần phát triển thêm.
+        </p>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900 text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-800">
+            <tr>
+              <th class="p-4 w-1/4">Thành phần / Tính năng</th>
+              <th class="p-4 w-3/8 text-amber-400">Trạng thái hiện tại (Bộ khung Scaffolding)</th>
+              <th class="p-4 w-3/8 text-emerald-400">Yêu cầu nâng cấp (Hệ thống Thực tế)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 text-slate-300">
+            <tr class="hover:bg-slate-900/40">
+              <td class="p-4 font-semibold text-white">1. RAG Tra cứu Luật pháp</td>
+              <td class="p-4">Dùng catalog tĩnh 5 bộ luật cốt lõi, so khớp từ khóa và full-text search đơn giản.</td>
+              <td class="p-4 text-emerald-300">Cào hàng chục ngàn VBQPPL, bóc tách phân cấp (Chương > Điều > Khoản), sinh vector embedding thật vào pgvector, kết hợp Cohere Re-ranker.</td>
+            </tr>
+            <tr class="hover:bg-slate-900/40">
+              <td class="p-4 font-semibold text-white">2. Rà soát Hợp đồng</td>
+              <td class="p-4">Regex kiểm tra phạt vi phạm > 8%, lãi suất > 20%, đơn phương chấm dứt, thiếu bất khả kháng.</td>
+              <td class="p-4 text-emerald-300">Hỗ trợ upload PDF scan mờ qua OCR, phân tích ngữ cảnh nhiều lượt bằng Claude 3.5 Sonnet, cho phép bấm Accept/Reject từng Redline và xuất file Word.</td>
+            </tr>
+            <tr class="hover:bg-slate-900/40">
+              <td class="p-4 font-semibold text-white">3. Soạn thảo Đơn từ</td>
+              <td class="p-4">3 mẫu đơn chuẩn điền form và xuất ra văn bản Markdown hành chính.</td>
+              <td class="p-4 text-emerald-300">AI phỏng vấn nhiều lượt thu thập dữ kiện, xuất trực tiếp file <code class="text-amber-300">.docx</code> chuẩn in ấn theo Nghị định 30/2020/NĐ-CP, mở rộng lên 50+ mẫu.</td>
+            </tr>
+            <tr class="hover:bg-slate-900/40">
+              <td class="p-4 font-semibold text-white">4. AI Chatbot</td>
+              <td class="p-4">Mô phỏng chuỗi suy luận Chain-of-Thought và trả lời theo template giả lập.</td>
+              <td class="p-4 text-emerald-300">Kết nối Vercel AI SDK <code class="text-amber-300">streamText</code> với LLM thật qua OpenRouter, suy luận động và trích xuất căn cứ luật tự động.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 5: Guidelines for Future Updates -->
+    <section id="guidelines" class="glass-card rounded-2xl p-6 space-y-4 border border-slate-800">
+      <h2 class="text-lg font-bold text-white flex items-center gap-2">
+        <i data-lucide="book-marked" class="w-5 h-5 text-amber-400"></i>
+        Quy Chuẩn Cập Nhật Dành Cho Nhà Phát Triển
+      </h2>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Để hệ thống duy trì khả năng truy vết lịch sử (Traceability), mỗi lần chỉnh sửa mã nguồn hoặc bổ sung tính năng mới, hãy bổ sung một mốc mới vào cả file <code class="text-amber-400 font-mono">PROJECT_PROGRESS_LOG.md</code> và file <code class="text-amber-400 font-mono">PROJECT_PROGRESS_LOG.html</code> theo định dạng:
+      </p>
+      <div class="rounded-xl bg-slate-950 p-4 font-mono text-xs text-slate-300 border border-slate-800/80">
+        <span class="text-purple-400">### ⏱️ Mốc [Số]: [Tên tóm tắt công việc]</span><br>
+        - <strong>Thời gian:</strong> <span class="text-amber-300">YYYY-MM-DD HH:mm:ss GMT+7</span><br>
+        - <strong>Tác vụ:</strong> [Mục tiêu và lý do can thiệp]<br>
+        - <strong>Chi tiết thay đổi:</strong><br>
+        &nbsp;&nbsp;• <span class="text-emerald-400">[ADDED]</span> [Tên file]: [Mô tả]<br>
+        &nbsp;&nbsp;• <span class="text-amber-400">[MODIFIED]</span> [Tên file]: [Mô tả]<br>
+        &nbsp;&nbsp;• <span class="text-rose-400">[FIXED]</span> [Tên file]: [Mô tả]<br>
+        &nbsp;&nbsp;• <span class="text-cyan-400">[VERIFIED]</span> [Kết quả kiểm thử build/run]
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 bg-slate-950/80 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <i data-lucide="shield" class="w-4 h-4 text-amber-400"></i>
+        <span>Legal-Mind Hệ thống Trợ lý AI Pháp luật Việt Nam</span>
+      </div>
+      <div class="text-slate-400 font-mono text-[11px]">
+        Tự động đồng bộ với PROJECT_PROGRESS_LOG.md
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript for Search, Filter & Copy -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Copy path to clipboard
+    function copyPath(text) {
+      navigator.clipboard.writeText(text);
+      alert('Đã copy đường dẫn: ' + text);
+    }
+
+    // Filter files by category
+    function filterCategory(category) {
+      const cards = document.querySelectorAll('.file-card');
+      const buttons = document.querySelectorAll('.category-btn');
+
+      buttons.forEach(b => {
+        b.classList.remove('border-amber-500/40', 'bg-amber-500/10', 'text-amber-300');
+        b.classList.add('border-slate-800', 'bg-slate-900/60', 'text-slate-400');
+      });
+
+      event.target.classList.remove('border-slate-800', 'bg-slate-900/60', 'text-slate-400');
+      event.target.classList.add('border-amber-500/40', 'bg-amber-500/10', 'text-amber-300');
+
+      cards.forEach(card => {
+        if (category === 'ALL' || card.getAttribute('data-category') === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Filter files by search input
+    function filterFiles() {
+      const query = document.getElementById('fileSearch').value.toLowerCase();
+      const cards = document.querySelectorAll('.file-card');
+
+      cards.forEach(card => {
+        const text = (card.innerText + ' ' + card.getAttribute('data-keywords')).toLowerCase();
+        if (text.includes(query)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

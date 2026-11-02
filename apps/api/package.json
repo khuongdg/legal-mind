@@ -1,0 +1,26 @@
+{
+  "name": "@legal-mind/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun --env-file ../../.env --watch src/index.ts",
+    "start": "bun --env-file ../../.env src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^1.1.9",
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.0",
+    "@legal-mind/db": "workspace:*",
+    "@legal-mind/env": "workspace:*",
+    "@legal-mind/legal-schemas": "workspace:*",
+    "ai": "^4.1.41",
+    "elysia": "^1.2.14",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.7.3"
+  }
+}
